@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.snes_lib.all;
+
 entity top_nexys4ddr is
     port (
         clk_i : in std_logic;
@@ -23,28 +25,32 @@ entity top_nexys4ddr is
 end entity top_nexys4ddr;
 
 architecture behavioral of top_nexys4ddr is
+    signal snes_js_btn_s : snes_js_btn_r;
+    signal snes_js_bus_i_s : snes_js_bus_i_r;
+    signal snes_js_bus_o_s : snes_js_bus_o_r;
 begin
-    tasty: entity work.tasty
-        port map (
-            clk_i => clk_i,
 
-            rst_i => '0',
+    snes_js_btn_s.up    <= btnu_i;
+    snes_js_btn_s.down  <= btnd_i;
+    snes_js_btn_s.left  <= btnl_i;
+    snes_js_btn_s.right <= btnr_i;
+    snes_js_btn_s.a     <= pmod_b_io(2);
+    snes_js_btn_s.b     <= pmod_b_io(4);
+    snes_js_btn_s.x     <= pmod_b_io(1);
+    snes_js_btn_s.y     <= pmod_b_io(3);
+    snes_js_btn_s.l     <= '0';
+    snes_js_btn_s.r     <= '0';
+    snes_js_btn_s.start <= btnc_i;
+    snes_js_btn_s.sel   <= '0';
 
-            btn_up_i    => btnu_i,
-            btn_left_i  => btnl_i,
-            btn_right_i => btnr_i,
-            btn_down_i  => btnd_i,
-            btn_a_i     => pmod_b_io(2),
-            btn_b_i     => pmod_b_io(4),
-            btn_x_i     => pmod_b_io(1),
-            btn_y_i     => pmod_b_io(3),
-            btn_start_i => btnc_i,
+    snes_js_bus_i_s.clock <= switch_i(0);
+    snes_js_bus_i_s.latch <= switch_i(1);
 
-            -- joystick related i/o
-            js_clock_i => switch_i(0),
-            js_latch_i => switch_i(1),
-            --js_data_o  => led_o(0)
-            js_data_o => open,
-            btnreg_o => led_o
-        );
+    tasty: entity work.tasty_snes
+    port map (
+        snes_js_btn_i => snes_js_btn_s,
+        snes_js_bus_i => snes_js_bus_i_s,
+        snes_js_bus_o => snes_js_bus_o_s,
+        btnreg_o => led_o
+    );
 end;

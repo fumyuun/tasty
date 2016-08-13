@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+use work.snes_lib.all;
+
 entity tb is
 end entity;
 
@@ -9,39 +11,52 @@ architecture tb_arch of tb is
     signal clk_s : std_logic;
     signal rst_s : std_logic;
 
-    signal btn_s : std_logic_vector(8 downto 0);
+    signal btn_s : std_logic_vector(12 downto 0);
 
     signal js_clock_s : std_logic := '0';
     signal js_latch_s : std_logic := '0';
     signal js_data_s  : std_logic;
 
     signal clock_active_s : std_logic := '0';
+
+    signal snes_js_btn_s : snes_js_btn_r;
+    signal snes_js_bus_i_s : snes_js_bus_i_r;
+    signal snes_js_bus_o_s : snes_js_bus_o_r;
 begin
+
+    -- up & b
+    btn_s <= "0000000100001";
+
+    snes_js_btn_s.up    <= btn_s(0);
+    snes_js_btn_s.down  <= btn_s(1);
+    snes_js_btn_s.left  <= btn_s(2);
+    snes_js_btn_s.right <= btn_s(3);
+    snes_js_btn_s.a     <= btn_s(4);
+    snes_js_btn_s.b     <= btn_s(5);
+    snes_js_btn_s.x     <= btn_s(6);
+    snes_js_btn_s.y     <= btn_s(7);
+    snes_js_btn_s.l     <= btn_s(8);
+    snes_js_btn_s.r     <= btn_s(9);
+    snes_js_btn_s.start <= btn_s(10);
+    snes_js_btn_s.sel   <= btn_s(11);
+
+    snes_js_bus_i_s.clock <= js_clock_s;
+    snes_js_bus_i_s.latch <= js_latch_s;
+
+    js_data_s <= snes_js_bus_o_s.data;
+
     clk_s <= '0';
     rst_s <= '1', '0' after 1 us;
 
-    -- up & b
-    btn_s <= "000100001";
 
-    tasty: entity work.tasty
+    tasty: entity work.tasty_snes
     port map (
-        clk_i => clk_s,
-        rst_i => rst_s,
-
-        btn_up_i    => btn_s(0),
-        btn_left_i  => btn_s(1),
-        btn_right_i => btn_s(2),
-        btn_down_i  => btn_s(3),
-        btn_a_i     => btn_s(4),
-        btn_b_i     => btn_s(5),
-        btn_x_i     => btn_s(6),
-        btn_y_i     => btn_s(7),
-        btn_start_i => btn_s(8),
-
-        js_clock_i => js_clock_s,
-        js_latch_i => js_latch_s,
-        js_data_o  => js_data_s
+        snes_js_btn_i => snes_js_btn_s,
+        snes_js_bus_i => snes_js_bus_i_s,
+        snes_js_bus_o => snes_js_bus_o_s,
+        btnreg_o => open
     );
+
 
     test_proc: process
     begin
