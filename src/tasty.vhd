@@ -12,43 +12,26 @@ entity tasty_snes is
         snes_js_bus_o : out snes_js_bus_o_r;
 
         -- debug
-        btnreg_o : out std_logic_vector(15 downto 0)
+        debug_enabled_i : in std_logic; -- enable the buttons on the board
+        btnreg_o        : out std_logic_vector(15 downto 0)
     );
 end entity tasty_snes;
 
 architecture behavioral of tasty_snes is
-    -- latches the state of the buttons
-    signal btn_r : std_logic_vector(15 downto 0);
-
+    signal debug_js_inputs_s     : snes_js_btn_r;
+    signal generated_js_inputs_s : snes_js_btn_r;
+    signal selected_js_inputs_s  : snes_js_btn_r;
 begin
-    btnreg_o <= btn_r;
-    snes_js_bus_o.data <= btn_r(0);
+    debug_js_inputs_s <= snes_js_btn_i;
 
-    clk_proc : process (snes_js_bus_i.latch, snes_js_bus_i.clock,
-        snes_js_btn_i.up, snes_js_btn_i.left, snes_js_btn_i.right, snes_js_btn_i.down,
-        snes_js_btn_i.a, snes_js_btn_i.b, snes_js_btn_i.x, snes_js_btn_i.y, snes_js_btn_i.start)
-    begin
-        -- latch button state
-        if snes_js_bus_i.latch = '1' then
-            btn_r(0) <= snes_js_btn_i.b;
-            btn_r(1) <= snes_js_btn_i.y;
-            btn_r(2) <= '0';    -- select
-            btn_r(3) <= snes_js_btn_i.start;
-            btn_r(4) <= snes_js_btn_i.up;
-            btn_r(5) <= snes_js_btn_i.down;
-            btn_r(6) <= snes_js_btn_i.left;
-            btn_r(7) <= snes_js_btn_i.right;
-            btn_r(8) <= snes_js_btn_i.a;
-            btn_r(9) <= snes_js_btn_i.x;
-            btn_r(10) <= '0'; -- l
-            btn_r(11) <= '0'; -- r
-            btn_r(15 downto 12) <= "1111"; -- unused bits
-        -- shift out our values
-        elsif rising_edge(snes_js_bus_i.clock) then
-            for i in 0 to 14 loop
-                btn_r(i) <= btn_r(i+1);
-            end loop;
-            btn_r(15) <= '0';
-        end if;
-    end process;
+    selected_js_inputs_s <= debug_js_inputs_s when debug_enabled_i = '1'
+                       else generated_js_inputs_s;
+
+    snes_btn_ctrl0: entity work.snes_btn_ctrl
+    port map (
+        snes_js_btn_i => selected_js_inputs_s,
+        snes_js_bus_i => snes_js_bus_i,
+        snes_js_bus_o => snes_js_bus_o,
+        btnreg_o => btnreg_o
+    );
 end;

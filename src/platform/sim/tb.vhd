@@ -54,6 +54,7 @@ begin
         snes_js_btn_i => snes_js_btn_s,
         snes_js_bus_i => snes_js_bus_i_s,
         snes_js_bus_o => snes_js_bus_o_s,
+        debug_enabled_i => '1',
         btnreg_o => open
     );
 
