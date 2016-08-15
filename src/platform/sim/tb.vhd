@@ -45,12 +45,13 @@ begin
 
     js_data_s <= snes_js_bus_o_s.data;
 
-    clk_s <= '0';
+    clk_s <= '0', not clk_s after 10 ns;
     rst_s <= '1', '0' after 1 us;
 
 
     tasty: entity work.tasty_snes
     port map (
+        clk_i => clk_s,
         snes_js_btn_i => snes_js_btn_s,
         snes_js_bus_i => snes_js_bus_i_s,
         snes_js_bus_o => snes_js_bus_o_s,
@@ -74,7 +75,7 @@ begin
 
     end process;
 
-    js_clock_s <= '0' when clock_active_s = '0' else not js_clock_s after 6 us;
+    js_clock_s <= '1' when clock_active_s = '0' else not js_clock_s after 6 us;
 
 
 end architecture tb_arch;

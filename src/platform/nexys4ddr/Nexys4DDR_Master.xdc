@@ -1,8 +1,3 @@
-# For testing purposes, I currently use pmod pins as the external clock source.
-# Vivado doesn't like this (as it's not a clock suitable pin), so I have to override his error for this.
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets pmod_a_io_1_IBUF];
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets pmod_a_io_2_IBUF];
-
 ## Clock signal
 set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk_i }]; #IO_L12P_T1_MRCC_35 Sch=clk100mhz
 create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {clk_i}];

@@ -6,6 +6,8 @@ use work.snes_lib.all;
 
 entity tasty_snes is
     port (
+        clk_i         : in std_logic;
+
         snes_js_btn_i : in snes_js_btn_r;
 
         snes_js_bus_i : in  snes_js_bus_i_r;
@@ -13,7 +15,7 @@ entity tasty_snes is
 
         -- debug
         debug_enabled_i : in std_logic; -- enable the buttons on the board
-        btnreg_o        : out std_logic_vector(11 downto 0)
+        btnreg_o        : out std_logic_vector(15 downto 0)
     );
 end entity tasty_snes;
 
@@ -42,6 +44,7 @@ begin
 
     snes_btn_ctrl0: entity work.snes_btn_ctrl
     port map (
+        clk_i => clk_i,
         snes_js_btn_i => selected_js_inputs_s,
         snes_js_bus_i => snes_js_bus_i,
         snes_js_bus_o => snes_js_bus_o,
