@@ -15,7 +15,7 @@ entity snes_btn_ctrl is
         snes_js_bus_i : in  snes_js_bus_i_r;
         snes_js_bus_o : out snes_js_bus_o_r;
 
-        btnreg_o : out std_logic_vector(15 downto 0)
+        btnreg_o : out std_logic_vector(11 downto 0)
     );
 end entity snes_btn_ctrl;
 
@@ -24,7 +24,7 @@ architecture behavioral of snes_btn_ctrl is
     signal btn_r : std_logic_vector(15 downto 0);
 
 begin
-    btnreg_o <= btn_r;
+    btnreg_o <= btn_r(11 downto 0);
     snes_js_bus_o.data <= btn_r(0);
 
     clk_proc : process (snes_js_bus_i.latch, snes_js_bus_i.clock,

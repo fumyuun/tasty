@@ -13,7 +13,7 @@ entity tasty_snes is
 
         -- debug
         debug_enabled_i : in std_logic; -- enable the buttons on the board
-        btnreg_o        : out std_logic_vector(15 downto 0)
+        btnreg_o        : out std_logic_vector(11 downto 0)
     );
 end entity tasty_snes;
 
@@ -23,6 +23,19 @@ architecture behavioral of tasty_snes is
     signal selected_js_inputs_s  : snes_js_btn_r;
 begin
     debug_js_inputs_s <= snes_js_btn_i;
+
+    generated_js_inputs_s.up    <= '0';
+    generated_js_inputs_s.down  <= '0';
+    generated_js_inputs_s.left  <= '0';
+    generated_js_inputs_s.right <= '0';
+    generated_js_inputs_s.a     <= '0';
+    generated_js_inputs_s.b     <= '0';
+    generated_js_inputs_s.x     <= '0';
+    generated_js_inputs_s.y     <= '0';
+    generated_js_inputs_s.l     <= '0';
+    generated_js_inputs_s.r     <= '0';
+    generated_js_inputs_s.start <= '1';
+    generated_js_inputs_s.sel   <= '0';
 
     selected_js_inputs_s <= debug_js_inputs_s when debug_enabled_i = '1'
                        else generated_js_inputs_s;
