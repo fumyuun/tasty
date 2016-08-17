@@ -14,8 +14,10 @@ entity tasty_snes is
         snes_js_bus_o : out snes_js_bus_o_r;
 
         -- debug
-        debug_enabled_i : in std_logic; -- enable the buttons on the board
-        btnreg_o        : out std_logic_vector(15 downto 0)
+        debug_enabled_i :  in std_logic; -- enable the buttons on the board
+        switch_i        :  in std_logic_vector(15 downto 0);
+        clock_indicator_o : out std_logic;
+        latch_indicator_o : out std_logic
     );
 end entity tasty_snes;
 
@@ -48,6 +50,7 @@ begin
         snes_js_btn_i => selected_js_inputs_s,
         snes_js_bus_i => snes_js_bus_i,
         snes_js_bus_o => snes_js_bus_o,
-        btnreg_o => btnreg_o
+        clock_indicator_o => clock_indicator_o,
+        latch_indicator_o => latch_indicator_o
     );
 end;

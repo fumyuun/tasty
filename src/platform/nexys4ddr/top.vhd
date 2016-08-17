@@ -64,7 +64,9 @@ begin
         snes_js_bus_i => snes_js_bus_i_s,
         snes_js_bus_o => snes_js_bus_o_s,
         debug_enabled_i => switch_i(15),
-        btnreg_o => led_o(15 downto 0)
+        clock_indicator_o => led_o(0),
+        latch_indicator_o => led_o(1),
+        switch_i => switch_i
     );
 
 end;
