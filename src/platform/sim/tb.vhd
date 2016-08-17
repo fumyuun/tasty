@@ -68,7 +68,6 @@ begin
         js_latch_s <= '1';
         wait for 12 us;
         js_latch_s <= '0';
-        wait for 6 us;
         clock_active_s <= '1';
         wait for 16*12 us;
         clock_active_s <= '0';
