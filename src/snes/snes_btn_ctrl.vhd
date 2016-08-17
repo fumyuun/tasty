@@ -59,15 +59,17 @@ begin
 
     btnreg_o <= std_logic_vector(latch_counter_s(15 downto 0));
 
-    snes_js_bus_o.data <= btn_r(0);
+    snes_js_bus_o.data <= not(btn_r(0));
 
-    comb_proc : process (ext_clock_rising_s, latch_r, btn_r, clk_counter_s, latch_counter_s,
+    comb_proc : process (ext_clock_rising_s, latch_r, btn_r, btn_next_r, clk_counter_s, latch_counter_s, latch_rising_s,
         snes_js_btn_i.up, snes_js_btn_i.left, snes_js_btn_i.right, snes_js_btn_i.down,
-        snes_js_btn_i.a, snes_js_btn_i.b, snes_js_btn_i.x, snes_js_btn_i.y, snes_js_btn_i.start)
+        snes_js_btn_i.a, snes_js_btn_i.b, snes_js_btn_i.x, snes_js_btn_i.y, snes_js_btn_i.start,
+        snes_js_btn_i.sel, snes_js_btn_i.l, snes_js_btn_i.r)
     begin
         btn_next_r <= btn_r;
         latch_counter_next_s <= latch_counter_s;
         clk_counter_next_s <= clk_counter_s;
+
 
         -- latch button state
         if latch_rising_s = '1' then
@@ -75,7 +77,7 @@ begin
         elsif latch_r = '1' then
             btn_next_r(0) <= snes_js_btn_i.b;
             btn_next_r(1) <= snes_js_btn_i.y;
-            btn_next_r(2) <= '0';    -- select
+            btn_next_r(2) <= snes_js_btn_i.sel;
             btn_next_r(3) <= snes_js_btn_i.start;
             btn_next_r(4) <= snes_js_btn_i.up;
             btn_next_r(5) <= snes_js_btn_i.down;
@@ -85,7 +87,7 @@ begin
             btn_next_r(9) <= snes_js_btn_i.x;
             btn_next_r(10) <= snes_js_btn_i.l;
             btn_next_r(11) <= snes_js_btn_i.r;
-            btn_next_r(15 downto 12) <= "1111"; -- unused bits
+            btn_next_r(15 downto 12) <= "0000"; -- unused bits
         -- shift out our values
         elsif ext_clock_rising_s = '1' then
             for i in 0 to 14 loop
