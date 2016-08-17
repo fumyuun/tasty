@@ -28,18 +28,18 @@ architecture behavioral of tasty_snes is
 begin
     debug_js_inputs_s <= snes_js_btn_i;
 
-    generated_js_inputs_s.up    <= '0';
-    generated_js_inputs_s.down  <= '0';
-    generated_js_inputs_s.left  <= '0';
-    generated_js_inputs_s.right <= '0';
-    generated_js_inputs_s.a     <= '0';
-    generated_js_inputs_s.b     <= '0';
-    generated_js_inputs_s.x     <= '0';
-    generated_js_inputs_s.y     <= '0';
-    generated_js_inputs_s.l     <= '0';
-    generated_js_inputs_s.r     <= '0';
-    generated_js_inputs_s.start <= '1';
-    generated_js_inputs_s.sel   <= '0';
+    generated_js_inputs_s.up    <= switch_i(0);
+    generated_js_inputs_s.down  <= switch_i(1);
+    generated_js_inputs_s.left  <= switch_i(2);
+    generated_js_inputs_s.right <= switch_i(3);
+    generated_js_inputs_s.a     <= switch_i(4);
+    generated_js_inputs_s.b     <= switch_i(5);
+    generated_js_inputs_s.x     <= switch_i(6);
+    generated_js_inputs_s.y     <= switch_i(7);
+    generated_js_inputs_s.l     <= switch_i(8);
+    generated_js_inputs_s.r     <= switch_i(9);
+    generated_js_inputs_s.start <= switch_i(10);
+    generated_js_inputs_s.sel   <= switch_i(11);
 
     selected_js_inputs_s <= debug_js_inputs_s when debug_enabled_i = '1'
                        else generated_js_inputs_s;
