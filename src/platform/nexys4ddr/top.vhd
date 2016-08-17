@@ -8,6 +8,8 @@ entity top_nexys4ddr is
     port (
         clk_i : in std_logic;
 
+        nrst_i : in std_logic;
+
         -- push buttons
         btnu_i : in std_logic;
         btnl_i : in std_logic;
@@ -23,17 +25,25 @@ entity top_nexys4ddr is
         pmod_b_io : in std_logic_vector(10 downto 0);
 
         led_o    : out std_logic_vector(15 downto 0);
-        switch_i : in std_logic_vector(15 downto 0)
+        switch_i : in std_logic_vector(15 downto 0);
+
+        sseg_c_o  : out std_logic_vector(7 downto 0);
+        sseg_an_o : out std_logic_vector(7 downto 0)
     );
 end entity top_nexys4ddr;
 
 architecture behavioral of top_nexys4ddr is
+    signal rst_s : std_logic;
     signal snes_js_btn_s : snes_js_btn_r;
     signal snes_js_bus_i_s : snes_js_bus_i_r;
     signal snes_js_bus_o_s : snes_js_bus_o_r;
 
     signal snes_js_btn_leds_s : snes_js_btn_r;
+
+    signal pc_s : std_logic_vector(15 downto 0);
 begin
+
+    rst_s <= not nrst_i;
 
     clock_proc: process(clk_i)
     begin
@@ -76,6 +86,7 @@ begin
     tasty: entity work.tasty_snes
     port map (
         clk_i => clk_i,
+        rst_i => rst_s,
         snes_js_btn_i => snes_js_btn_s,
         snes_js_bus_i => snes_js_bus_i_s,
         snes_js_bus_o => snes_js_bus_o_s,
@@ -83,7 +94,16 @@ begin
         clock_indicator_o => led_o(14),
         latch_indicator_o => led_o(15),
         btn_indicator_o => snes_js_btn_leds_s,
-        switch_i => switch_i
+        switch_i => switch_i,
+        pc_o => pc_s
+    );
+
+    seven_segment_ctrl0: entity work.seven_segment_ctrl
+    port map (
+        clk_i => clk_i,
+        num_i => pc_s,
+        c_o   => sseg_c_o,
+        an_o  => sseg_an_o
     );
 
 end;

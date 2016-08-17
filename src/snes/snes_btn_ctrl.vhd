@@ -11,6 +11,7 @@ use work.snes_lib.all;
 entity snes_btn_ctrl is
     port (
         clk_i         : in std_logic;
+        pause_o       : out std_logic;
         snes_js_btn_i : in snes_js_btn_r;
 
         snes_js_bus_i : in  snes_js_bus_i_r;
@@ -35,11 +36,11 @@ architecture behavioral of snes_btn_ctrl is
     signal latch_rising_s : std_logic;
     signal ext_clock_rising_s : std_logic;
 
-    signal clk_counter_s : unsigned(31 downto 0);
-    signal clk_counter_next_s : unsigned(31 downto 0);
+    signal clk_counter_s : unsigned(15 downto 0);
+    signal clk_counter_next_s : unsigned(15 downto 0);
 
-    signal latch_counter_s : unsigned(31 downto 0);
-    signal latch_counter_next_s : unsigned(31 downto 0);
+    signal latch_counter_s : unsigned(15 downto 0);
+    signal latch_counter_next_s : unsigned(15 downto 0);
 
 begin
 
@@ -59,8 +60,10 @@ begin
     latch_rising_s <= not(prev_latch_r) and latch_r;
     ext_clock_rising_s <= not(prev_ext_clock_r) and ext_clock_r;
 
-    clock_indicator_o <= clk_counter_s(6);
+    clock_indicator_o <= clk_counter_s(3);
     latch_indicator_o <= latch_counter_s(6);
+
+    pause_o <= '0' when clk_counter_s > 15 else '1';
 
     snes_js_bus_o.data <= not(btn_r(0));
 
@@ -77,6 +80,7 @@ begin
         -- latch button state
         if latch_rising_s = '1' then
             latch_counter_next_s <= latch_counter_s + 1;
+            clk_counter_next_s <= x"0000";
         elsif latch_r = '1' then
             btn_next_r(0) <= snes_js_btn_i.b;
             btn_next_r(1) <= snes_js_btn_i.y;
