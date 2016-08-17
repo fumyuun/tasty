@@ -31,6 +31,8 @@ architecture behavioral of top_nexys4ddr is
     signal snes_js_btn_s : snes_js_btn_r;
     signal snes_js_bus_i_s : snes_js_bus_i_r;
     signal snes_js_bus_o_s : snes_js_bus_o_r;
+
+    signal snes_js_btn_leds_s : snes_js_btn_r;
 begin
 
     clock_proc: process(clk_i)
@@ -57,6 +59,20 @@ begin
 
     end process;
 
+
+    led_o(0)  <= snes_js_btn_leds_s.up;
+    led_o(1)  <= snes_js_btn_leds_s.down;
+    led_o(2)  <= snes_js_btn_leds_s.left;
+    led_o(3)  <= snes_js_btn_leds_s.right;
+    led_o(4)  <= snes_js_btn_leds_s.a;
+    led_o(5)  <= snes_js_btn_leds_s.b;
+    led_o(6)  <= snes_js_btn_leds_s.x;
+    led_o(7)  <= snes_js_btn_leds_s.y;
+    led_o(8)  <= snes_js_btn_leds_s.l;
+    led_o(9)  <= snes_js_btn_leds_s.r;
+    led_o(10) <= snes_js_btn_leds_s.start;
+    led_o(11) <= snes_js_btn_leds_s.sel;
+
     tasty: entity work.tasty_snes
     port map (
         clk_i => clk_i,
@@ -64,8 +80,9 @@ begin
         snes_js_bus_i => snes_js_bus_i_s,
         snes_js_bus_o => snes_js_bus_o_s,
         debug_enabled_i => switch_i(15),
-        clock_indicator_o => led_o(0),
-        latch_indicator_o => led_o(1),
+        clock_indicator_o => led_o(14),
+        latch_indicator_o => led_o(15),
+        btn_indicator_o => snes_js_btn_leds_s,
         switch_i => switch_i
     );
 

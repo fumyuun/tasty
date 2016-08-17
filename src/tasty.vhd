@@ -17,7 +17,8 @@ entity tasty_snes is
         debug_enabled_i :  in std_logic; -- enable the buttons on the board
         switch_i        :  in std_logic_vector(15 downto 0);
         clock_indicator_o : out std_logic;
-        latch_indicator_o : out std_logic
+        latch_indicator_o : out std_logic;
+        btn_indicator_o   : out snes_js_btn_r
     );
 end entity tasty_snes;
 
@@ -43,6 +44,8 @@ begin
 
     selected_js_inputs_s <= debug_js_inputs_s when debug_enabled_i = '1'
                        else generated_js_inputs_s;
+
+    btn_indicator_o <= selected_js_inputs_s;
 
     snes_btn_ctrl0: entity work.snes_btn_ctrl
     port map (
