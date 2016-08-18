@@ -80,7 +80,6 @@ begin
         -- latch button state
         if latch_rising_s = '1' then
             latch_counter_next_s <= latch_counter_s + 1;
-            clk_counter_next_s <= x"0000";
         elsif latch_r = '1' then
             btn_next_r(0) <= snes_js_btn_i.b;
             btn_next_r(1) <= snes_js_btn_i.y;
@@ -95,6 +94,7 @@ begin
             btn_next_r(10) <= snes_js_btn_i.l;
             btn_next_r(11) <= snes_js_btn_i.r;
             btn_next_r(15 downto 12) <= "0000"; -- unused bits
+            clk_counter_next_s <= x"0000";
         -- shift out our values
         elsif ext_clock_rising_s = '1' then
             for i in 0 to 14 loop

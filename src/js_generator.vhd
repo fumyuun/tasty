@@ -18,33 +18,40 @@ architecture behavioral of js_generator is
     signal address_s  : std_logic_vector(15 downto 0) := x"0000";
     signal address_next_s : std_logic_vector(15 downto 0);
     signal data_s : std_logic_vector(15 downto 0);
+
+    signal received_r : std_logic;
+    signal received_next_r : std_logic;
 begin
-    --rom16_0: entity work.rom16
-    --port map (
-    --    clk_i  => clk_i,
-    --    address_i  => address_s,
-    --    data_o => data_s
-    --);
+    rom16_0: entity work.rom16
+    port map (
+        clk_i  => clk_i,
+        address_i  => address_s,
+        data_o => data_s
+    );
 
     pc_o <= address_s;
-
-    data_s <= x"0001" when address_next_s(0) = '1' else x"0000";
 
     clock_proc: process (clk_i, rst_i)
     begin
         if rst_i = '1' then
+            received_r <= '0';
             address_s <= x"0000";
         elsif rising_edge(clk_i) then
             address_s <= address_next_s;
+            received_r <= received_next_r;
         end if;
     end process;
 
     comb_proc: process(pause_i, address_s)
     begin
         address_next_s <= address_s;
+        received_next_r <= received_r;
 
-        if pause_i = '0' then
+        if pause_i = '0' and received_r = '1' then
             address_next_s <= std_logic_vector(unsigned(address_s) + 1);
+            received_next_r <= '0';
+        elsif pause_i = '1' and received_r = '0' then
+            received_next_r <= '1';
         end if;
     end process;
 
