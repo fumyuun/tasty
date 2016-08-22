@@ -40,10 +40,14 @@ architecture behavioral of top_nexys4ddr is
 
     signal snes_js_btn_leds_s : snes_js_btn_r;
 
-    signal pc_s : std_logic_vector(15 downto 0);
+    signal pc_s       : std_logic_vector(15 downto 0);
+    signal dropped_s  : std_logic_vector(15 downto 0);
+    signal sseg_out_s : std_logic_vector(31 downto 0);
 begin
 
     rst_s <= not nrst_i;
+
+    sseg_out_s <= dropped_s & pc_s;
 
     clock_proc: process(clk_i)
     begin
@@ -95,13 +99,14 @@ begin
         latch_indicator_o => led_o(15),
         btn_indicator_o => snes_js_btn_leds_s,
         switch_i => switch_i,
-        pc_o => pc_s
+        pc_o => pc_s,
+        dropped_o => dropped_s
     );
 
     seven_segment_ctrl0: entity work.seven_segment_ctrl
     port map (
         clk_i => clk_i,
-        num_i => pc_s,
+        num_i => sseg_out_s,
         c_o   => sseg_c_o,
         an_o  => sseg_an_o
     );

@@ -10,6 +10,7 @@ entity js_generator is
         rst_i   : in std_logic;
         pause_i : in std_logic;
         pc_o    : out std_logic_vector(15 downto 0);
+        dropped_o : out std_logic_vector(15 downto 0);
         js_o    : out snes_js_btn_r
     );
 end entity js_generator;
@@ -18,6 +19,12 @@ architecture behavioral of js_generator is
     signal address_s  : std_logic_vector(15 downto 0) := x"0000";
     signal address_next_s : std_logic_vector(15 downto 0);
     signal data_s : std_logic_vector(15 downto 0);
+
+    signal cycle_count_s : unsigned(31 downto 0);
+    signal cycle_count_next_s : unsigned(31 downto 0);
+
+    signal dropped_count_s      : unsigned(15 downto 0);
+    signal dropped_count_next_s : unsigned(15 downto 0);
 
     signal received_r : std_logic;
     signal received_next_r : std_logic;
@@ -31,27 +38,47 @@ begin
 
     pc_o <= address_s;
 
+    dropped_o <= std_logic_vector(dropped_count_s(15 downto 0));
+
     clock_proc: process (clk_i, rst_i)
     begin
         if rst_i = '1' then
             received_r <= '0';
             address_s <= x"0000";
+            cycle_count_s <= x"00000000";
+            dropped_count_s <= x"0000";
         elsif rising_edge(clk_i) then
             address_s <= address_next_s;
             received_r <= received_next_r;
+            cycle_count_s <= cycle_count_next_s;
+            dropped_count_s <= dropped_count_next_s;
         end if;
     end process;
 
-    comb_proc: process(pause_i, address_s)
+    comb_proc: process(pause_i, address_s, cycle_count_s, received_r)
     begin
         address_next_s <= address_s;
         received_next_r <= received_r;
+        cycle_count_next_s <= cycle_count_s;
+        dropped_count_next_s <= dropped_count_s;
 
-        if pause_i = '0' and received_r = '1' then
+        --if cycle_count_s > x"196E6B" then -- 60Hz
+        if cycle_count_s > x"1E8480" + x"1E8" then -- 50Hz + some small buffer
+            -- timeout frame
             address_next_s <= std_logic_vector(unsigned(address_s) + 1);
             received_next_r <= '0';
+            cycle_count_next_s <= x"00000000";
+            dropped_count_next_s <= dropped_count_s + 1;
+
+        elsif pause_i = '0' and received_r = '1' then
+            address_next_s <= std_logic_vector(unsigned(address_s) + 1);
+            received_next_r <= '0';
+            cycle_count_next_s <= x"00000000";
         elsif pause_i = '1' and received_r = '0' then
             received_next_r <= '1';
+            cycle_count_next_s <= cycle_count_s + 1;
+        else
+            cycle_count_next_s <= cycle_count_s + 1;
         end if;
     end process;
 

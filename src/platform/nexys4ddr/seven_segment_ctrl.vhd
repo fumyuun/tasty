@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 entity seven_segment_ctrl is
     port (
         clk_i : in std_logic;
-        num_i : in std_logic_vector(15 downto 0);
+        num_i : in std_logic_vector(31 downto 0);
 
         an_o  : out std_logic_vector(7 downto 0);
         c_o   : out std_logic_vector(7 downto 0)
@@ -27,10 +27,10 @@ begin
             "11111101" when turn_s = 1 else
             "11111011" when turn_s = 2 else
             "11110111" when turn_s = 3 else
-            --"11101111" when turn_s = 4 else
-            --"11011111" when turn_s = 5 else
-            --"10111111" when turn_s = 6 else
-            --"01111111" when turn_s = 7 else
+            "11101111" when turn_s = 4 else
+            "11011111" when turn_s = 5 else
+            "10111111" when turn_s = 6 else
+            "01111111" when turn_s = 7 else
             "11111111";
 
     c_o <= pattern_s;
@@ -39,10 +39,10 @@ begin
                       num_i(2 * 4 - 1 downto 1 * 4) when turn_s = 1 else
                       num_i(3 * 4 - 1 downto 2 * 4) when turn_s = 2 else
                       num_i(4 * 4 - 1 downto 3 * 4) when turn_s = 3 else
-                      --num_i(5 * 4 - 1 downto 4 * 4) when turn_s = 4 else
-                      --num_i(6 * 4 - 1 downto 5 * 4) when turn_s = 5 else
-                      --num_i(7 * 4 - 1 downto 6 * 4) when turn_s = 6 else
-                      --num_i(8 * 4 - 1 downto 7 * 4) when turn_s = 7 else
+                      num_i(5 * 4 - 1 downto 4 * 4) when turn_s = 4 else
+                      num_i(6 * 4 - 1 downto 5 * 4) when turn_s = 5 else
+                      num_i(7 * 4 - 1 downto 6 * 4) when turn_s = 6 else
+                      num_i(8 * 4 - 1 downto 7 * 4) when turn_s = 7 else
                       x"0";
 
     digit_s <= unsigned(active_digit_s);

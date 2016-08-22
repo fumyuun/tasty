@@ -20,7 +20,8 @@ entity tasty_snes is
         clock_indicator_o : out std_logic;
         latch_indicator_o : out std_logic;
         btn_indicator_o   : out snes_js_btn_r;
-        pc_o              : out std_logic_vector(15 downto 0)
+        pc_o              : out std_logic_vector(15 downto 0);
+        dropped_o         : out std_logic_vector(15 downto 0)
     );
 end entity tasty_snes;
 
@@ -58,6 +59,7 @@ begin
         rst_i => rst_i,
         pause_i => generator_pause_s,
         js_o => generated_js_inputs_s,
-        pc_o => pc_o
+        pc_o => pc_o,
+        dropped_o => dropped_o
     );
 end;

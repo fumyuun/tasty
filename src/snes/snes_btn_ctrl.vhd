@@ -18,7 +18,9 @@ entity snes_btn_ctrl is
         snes_js_bus_o : out snes_js_bus_o_r;
 
         clock_indicator_o : out std_logic;
-        latch_indicator_o : out std_logic
+        latch_indicator_o : out std_logic;
+
+        started_o : out std_logic
     );
 end entity snes_btn_ctrl;
 
@@ -42,6 +44,8 @@ architecture behavioral of snes_btn_ctrl is
     signal latch_counter_s : unsigned(15 downto 0);
     signal latch_counter_next_s : unsigned(15 downto 0);
 
+    signal started_s : std_logic := '0';
+
 begin
 
     clock_proc: process (clk_i)
@@ -61,7 +65,7 @@ begin
     ext_clock_rising_s <= not(prev_ext_clock_r) and ext_clock_r;
 
     clock_indicator_o <= clk_counter_s(3);
-    latch_indicator_o <= latch_counter_s(6);
+    latch_indicator_o <= latch_counter_s(4);
 
     pause_o <= '0' when clk_counter_s > 15 else '1';
 
@@ -80,6 +84,7 @@ begin
         -- latch button state
         if latch_rising_s = '1' then
             latch_counter_next_s <= latch_counter_s + 1;
+            started_s <= '1';
         elsif latch_r = '1' then
             btn_next_r(0) <= snes_js_btn_i.b;
             btn_next_r(1) <= snes_js_btn_i.y;

@@ -111,7 +111,7 @@ int main (int argc, char **argv) {
 
         cbuf = input.get();
 
-        if (cbuf == '|' && (input >> js)) {
+        if ((cbuf == '|' || cbuf == 'F') && (input >> js)) {
             snes_list.push_back(js);
         } else {
             input.ignore(256, '\n');
