@@ -34,4 +34,14 @@ package snes_lib is
         sel     : std_logic;
     end record;
 
+    type snes_mouse_btn_r is
+    record
+        left        : std_logic;
+        right       : std_logic;
+        x_direction : std_logic;
+        y_direction : std_logic;
+        x_motion    : std_logic_vector(6 downto 0);
+        y_motion    : std_logic_vector(6 downto 0);
+    end record;
+
 end package snes_lib;
