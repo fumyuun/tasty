@@ -28,7 +28,10 @@ entity top_nexys4ddr is
         switch_i : in std_logic_vector(15 downto 0);
 
         sseg_c_o  : out std_logic_vector(7 downto 0);
-        sseg_an_o : out std_logic_vector(7 downto 0)
+        sseg_an_o : out std_logic_vector(7 downto 0);
+
+        ps2_clk_io  : inout std_logic;
+        ps2_data_io : inout std_logic
     );
 end entity top_nexys4ddr;
 
@@ -104,6 +107,14 @@ begin
         num_i => pc_s,
         c_o   => sseg_c_o,
         an_o  => sseg_an_o
+    );
+
+    ps2_ctrl0: entity work.ps2_ctrl
+    port map (
+        clk_i             => clk_i,
+        ps2_clk_io        => ps2_clk_io,
+        ps2_data_io       => ps2_data_io,
+        mouse_connected_o => led_o(13)
     );
 
 end;
