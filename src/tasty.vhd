@@ -9,10 +9,12 @@ entity tasty_snes is
         clk_i         : in std_logic;
         rst_i         : in std_logic;
 
-        snes_js_btn_i : in snes_js_btn_r;
-
-        snes_js_bus_i : in  snes_js_bus_i_r;
-        snes_js_bus_o : out snes_js_bus_o_r;
+        -- the bus to the snes joystick
+        js_bus_i      : in  snes_js_bus_o_r;
+        js_bus_o      : out snes_js_bus_i_r;
+        -- the bus to the snes
+        snes_bus_i    : in  snes_js_bus_i_r;
+        snes_bus_o    : out snes_js_bus_o_r;
 
         -- debug
         debug_enabled_i :  in std_logic; -- enable the buttons on the board
@@ -32,7 +34,7 @@ architecture behavioral of tasty_snes is
     signal ctrl_pause_s : std_logic; -- controller is not done yet issuing current inputs
     signal generator_pause_s : std_logic; -- goes to generator
 begin
-    debug_js_inputs_s <= snes_js_btn_i;
+    --debug_js_inputs_s <= snes_js_btn_i;
 
     selected_js_inputs_s <= debug_js_inputs_s when debug_enabled_i = '1'
                        else generated_js_inputs_s;
@@ -41,23 +43,12 @@ begin
 
     generator_pause_s <= '1' when debug_enabled_i = '1' or ctrl_pause_s = '1' else '0';
 
-    snes_btn_ctrl0: entity work.snes_btn_ctrl
+    snes_btn_ctrl0: entity work.snes_js_ctrl
     port map (
         clk_i => clk_i,
-        snes_js_btn_i => selected_js_inputs_s,
-        snes_js_bus_i => snes_js_bus_i,
-        snes_js_bus_o => snes_js_bus_o,
-        clock_indicator_o => clock_indicator_o,
-        latch_indicator_o => latch_indicator_o,
-        pause_o => ctrl_pause_s
-    );
-
-    js_generator0: entity work.js_generator
-    port map (
-        clk_i => clk_i,
-        rst_i => rst_i,
-        pause_i => generator_pause_s,
-        js_o => generated_js_inputs_s,
-        pc_o => pc_o
+        snes_i => snes_bus_i,
+        snes_o => snes_bus_o,
+        js_i   => js_bus_i,
+        js_o   => js_bus_o
     );
 end;

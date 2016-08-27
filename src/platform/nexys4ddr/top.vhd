@@ -22,6 +22,10 @@ entity top_nexys4ddr is
         pmod_a_io_2 : in std_logic;
         pmod_a_io_3 : out std_logic;
 
+        pmod_a_io_7 : out std_logic;
+        pmod_a_io_8 : out std_logic;
+        pmod_a_io_9 : in std_logic;
+
         pmod_b_io : in std_logic_vector(10 downto 0);
 
         led_o    : out std_logic_vector(15 downto 0);
@@ -35,8 +39,10 @@ end entity top_nexys4ddr;
 architecture behavioral of top_nexys4ddr is
     signal rst_s : std_logic;
     signal snes_js_btn_s : snes_js_btn_r;
-    signal snes_js_bus_i_s : snes_js_bus_i_r;
-    signal snes_js_bus_o_s : snes_js_bus_o_r;
+    signal snes_bus_i_s : snes_js_bus_i_r;
+    signal snes_bus_o_s : snes_js_bus_o_r;
+    signal js_bus_i_s   : snes_js_bus_o_r;
+    signal js_bus_o_s   : snes_js_bus_i_r;
 
     signal snes_js_btn_leds_s : snes_js_btn_r;
 
@@ -61,10 +67,14 @@ begin
             snes_js_btn_s.start <= btnc_i;
             snes_js_btn_s.sel   <= '0';
 
-            snes_js_bus_i_s.latch <= pmod_a_io_1;
-            snes_js_bus_i_s.clock <= pmod_a_io_2;
+            snes_bus_i_s.latch <= pmod_a_io_1;
+            snes_bus_i_s.clock <= pmod_a_io_2;
 
-            pmod_a_io_3 <= snes_js_bus_o_s.data;
+            pmod_a_io_3 <= snes_bus_o_s.data;
+
+            pmod_a_io_7 <= js_bus_o_s.latch;
+            pmod_a_io_8 <= js_bus_o_s.clock;
+            js_bus_i_s.data <= pmod_a_io_9;
         end if;
 
     end process;
@@ -87,9 +97,10 @@ begin
     port map (
         clk_i => clk_i,
         rst_i => rst_s,
-        snes_js_btn_i => snes_js_btn_s,
-        snes_js_bus_i => snes_js_bus_i_s,
-        snes_js_bus_o => snes_js_bus_o_s,
+        snes_bus_i => snes_bus_i_s,
+        snes_bus_o => snes_bus_o_s,
+        js_bus_i   => js_bus_i_s,
+        js_bus_o   => js_bus_o_s,
         debug_enabled_i => switch_i(15),
         clock_indicator_o => led_o(14),
         latch_indicator_o => led_o(15),
